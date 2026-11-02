@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mostrador — La pantalla que promociona y vende a la vez</title>
+<meta name="description" content="Mostrador convierte el televisor de tu local en una pantalla que promociona y recibe pedidos: el cliente escanea el QR, arma su pedido y te llega por WhatsApp.">
+<meta name="theme-color" content="#EA580C">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='22' fill='%23EA580C'/%3E%3Cpath d='M28 20H68L78 36A7.5 7.5 0 0 1 63 36A7.5 7.5 0 0 1 48 36A7.5 7.5 0 0 1 33 36A7.5 7.5 0 0 1 18 36Z' fill='%23FFEDD5'/%3E%3Crect x='24' y='49' width='48' height='24' rx='5' fill='%231C1917'/%3E%3Crect x='33' y='56' width='10' height='10' rx='2' fill='%23fff'/%3E%3Crect x='53' y='56' width='10' height='10' rx='2' fill='%23EA580C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1C1917; --primary:#EA580C; --primary-soft:#FFEDD5; --bg:#FAF7F2; --surface:#fff;
+  --muted:#78716C; --border:#E7E5E4; --success:#16A34A; --whatsapp:#25D366; --danger:#DC2626;
+  /* orange for small text: --primary fails 4.5:1 on light backgrounds */
+  --primary-deep:#C2410C;
+  --display:"Plus Jakarta Sans",system-ui,sans-serif; --body:"DM Sans",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.0625rem/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:4px}
+.dark :focus-visible,.cta :focus-visible,footer :focus-visible{outline-color:var(--primary-soft)}
+.wrap{width:min(1160px,100% - 32px);margin-inline:auto}
+h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin:0}
+h2{font-size:clamp(2rem,4.6vw,3.25rem)}
+h3{font-size:1.25rem;letter-spacing:-.02em;line-height:1.2}
+p{margin:0}
+.eyebrow{font:700 .8125rem/1.3 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--primary-deep);margin-bottom:16px}
+.dark .eyebrow{color:#FDBA74}
+.lead{font-size:1.1875rem;color:var(--muted);max-width:54ch;margin-top:20px}
+.dark .lead{color:#D6D3D1}
+section{padding-block:clamp(64px,9vw,120px)}
+
+/* buttons: 18px bold so white-on-orange counts as large text */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 26px;border-radius:14px;font:700 1.125rem/1 var(--display);text-decoration:none;border:2px solid transparent;transition:transform .15s,box-shadow .15s,background .15s}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 8px 20px -8px rgba(234,88,12,.7)}
+.btn-primary:hover{transform:translateY(-2px);background:#DC4F0A}
+.btn-ghost{border-color:var(--ink);color:var(--ink)}
+.btn-ghost:hover{background:var(--ink);color:var(--bg)}
+.btn-sm{min-height:42px;padding:0 18px;font-size:1rem;border-radius:12px}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:20;background:rgba(250,247,242,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+.logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font:800 1.5rem/1 var(--display);letter-spacing:-.04em}
+.logo svg{width:36px;height:36px;flex:none}
+.nav .btn{white-space:nowrap}
+@media(max-width:420px){.logo{font-size:1.25rem}.nav .btn-sm{padding:0 14px;font-size:.9375rem}}
+.logo i{font-style:normal;color:var(--primary-deep)}
+.nav ul{display:none;list-style:none;margin:0;padding:0;gap:28px}
+.nav ul a{text-decoration:none;font-weight:500}
+.nav ul a:hover{color:var(--primary-deep)}
+@media(min-width:860px){.nav ul{display:flex}}
+
+/* signature: the shop awning */
+.awning-wrap{filter:drop-shadow(0 10px 8px rgba(28,25,23,.14));position:relative;z-index:2}
+.awning{height:56px;background:repeating-linear-gradient(90deg,var(--primary) 0 40px,var(--primary-soft) 40px 80px);
+  -webkit-mask:linear-gradient(#000,#000) 0 0/100% 28px no-repeat,radial-gradient(circle at 20px 0,#000 19.5px,transparent 20px) 0 28px/40px 28px repeat-x;
+  mask:linear-gradient(#000,#000) 0 0/100% 28px no-repeat,radial-gradient(circle at 20px 0,#000 19.5px,transparent 20px) 0 28px/40px 28px repeat-x}
+
+/* image crops: --sw source width, --x/--y/--w/--h crop box in source px */
+.crop{position:relative;overflow:hidden;aspect-ratio:var(--w)/var(--h)}
+.crop img{position:absolute;max-width:none;height:auto;width:calc(var(--sw)/var(--w)*100%);left:calc(var(--x)/var(--w)*-100%);top:calc(var(--y)/var(--h)*-100%)}
+.phone{border-radius:6.5%/3%;border:1px solid var(--border);box-shadow:0 24px 40px -20px rgba(28,25,23,.35);background:var(--surface)}
+.shot{border-radius:20px;border:1px solid var(--border);box-shadow:0 20px 40px -24px rgba(28,25,23,.35)}
+
+/* hero */
+.hero{padding-top:56px;padding-bottom:clamp(64px,8vw,110px);margin-top:-28px;background:radial-gradient(60% 50% at 80% 40%,var(--primary-soft),transparent 70%)}
+.hero .wrap{display:grid;gap:56px;align-items:center}
+@media(min-width:960px){.hero .wrap{grid-template-columns:1fr 1.05fr;gap:40px}}
+.hero h1{font-size:clamp(2.6rem,6.4vw,4.75rem)}
+.hero h1 mark{background:linear-gradient(transparent 62%,var(--primary-soft) 62% 92%,transparent 92%);color:inherit;padding:0 .06em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.hero h1 mark.o{background:linear-gradient(transparent 62%,#FDBA74 62% 92%,transparent 92%)}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.fine{margin-top:20px;font-size:.9375rem;color:var(--muted)}
+.stage{position:relative;padding:0 0 64px 8%}
+.tv{background:var(--ink);padding:10px;border-radius:18px;box-shadow:0 30px 50px -24px rgba(28,25,23,.6)}
+.tv .crop{border-radius:10px}
+.stage .phone{position:absolute;left:0;bottom:0;width:36%;z-index:1;border-width:3px;border-color:var(--ink)}
+.chip{position:absolute;right:2%;bottom:6px;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:8px 16px 8px 10px;font:700 .875rem/1 var(--display);box-shadow:0 10px 24px -12px rgba(28,25,23,.4)}
+.chip b{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--whatsapp);color:#fff}
+.rise{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+.rise.d1{animation-delay:.12s}.rise.d2{animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+
+/* steps */
+.steps{display:grid;gap:40px;margin-top:56px;counter-reset:s}
+@media(min-width:860px){.steps{grid-template-columns:repeat(3,1fr);gap:32px}}
+.step .crop{margin-bottom:24px}
+.step h3::before{counter-increment:s;content:counter(s);display:inline-grid;place-items:center;width:32px;height:32px;margin-right:10px;border-radius:50%;background:var(--ink);color:var(--primary-soft);font-size:1rem;vertical-align:2px}
+.step p{margin-top:10px;color:var(--muted)}
+
+/* dark screen section */
+.dark{background:var(--ink);color:var(--bg);overflow:hidden}
+.split{display:grid;gap:48px;align-items:center}
+@media(min-width:960px){.split{grid-template-columns:1fr 1.15fr;gap:72px}}
+.ticks{list-style:none;margin:32px 0 0;padding:0;display:grid;gap:14px}
+.ticks li{position:relative;padding-left:32px}
+.ticks li::before{content:"";position:absolute;left:0;top:.3em;width:18px;height:18px;border-radius:50%;background:var(--primary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.5l2.5 2.5L13 6.5' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.glow{position:relative}
+.glow::before{content:"";position:absolute;inset:-12% -8%;background:radial-gradient(closest-side,rgba(234,88,12,.45),transparent);z-index:0}
+.glow .tv{position:relative;background:#292524;box-shadow:0 0 0 1px #44403C,0 30px 60px -20px #000}
+.token{margin-top:28px;display:inline-block;max-width:100%;overflow-wrap:anywhere;font:500 .9375rem/1.4 ui-monospace,Menlo,Consolas,monospace;background:#292524;border:1px solid #44403C;border-radius:10px;padding:10px 14px;color:#FDBA74}
+
+/* phone strips */
+.strip{--n:4;display:grid;grid-auto-flow:column;grid-auto-columns:min(68vw,250px);gap:20px;margin:48px -16px 0;padding:8px 16px 24px;overflow-x:auto;scroll-snap-type:x mandatory;list-style:none}
+.strip>li{scroll-snap-align:center}
+.strip .cap{margin-top:14px;font-size:.9375rem;color:var(--muted)}
+.strip .cap b{display:block;font:700 1rem/1.3 var(--display);color:var(--ink);margin-bottom:2px}
+@media(min-width:1000px){.strip{grid-auto-flow:row;grid-auto-columns:auto;grid-template-columns:repeat(var(--n),1fr);margin-inline:0;padding-inline:0;overflow:visible}}
+.strip.b5{--n:5;gap:16px}
+
+.bo-head{display:grid;gap:32px}
+@media(min-width:960px){.bo-head{grid-template-columns:1fr 1fr;gap:72px;align-items:end}}
+.bo-head .lead{margin:0}
+.plain{background:var(--surface);border-block:1px solid var(--border)}
+
+/* benefits */
+.two{display:grid;gap:20px;margin-top:48px}
+@media(min-width:860px){.two{grid-template-columns:1fr 1fr;gap:24px}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:clamp(24px,4vw,40px)}
+.card.soft{background:var(--primary-soft);border-color:#FED7AA}
+.card h3{font-size:1.5rem;margin-bottom:20px}
+.card .ticks{margin-top:0}
+.card.soft .ticks li::before{background-color:var(--ink)}
+
+/* subdomain band */
+.band .wrap{display:grid;gap:40px;align-items:center}
+@media(min-width:960px){.band .wrap{grid-template-columns:1.2fr 1fr;gap:72px}}
+.url{font:800 clamp(1.4rem,6vw,3.25rem)/1.1 var(--display);letter-spacing:-.04em;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:clamp(20px,4vw,36px);box-shadow:0 20px 40px -26px rgba(28,25,23,.4)}
+@media(min-width:960px){.url{font-size:clamp(1.6rem,3.1vw,3rem)}}
+.url span{color:var(--primary-deep)}
+.nos{display:grid;gap:12px;margin-top:28px;list-style:none;padding:0}
+.nos li{display:flex;gap:12px;align-items:flex-start;font-weight:500}
+.nos li::before{content:"\00d7";flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700;line-height:1}
+
+/* roadmap */
+.road{display:grid;gap:16px;margin-top:40px}
+@media(min-width:760px){.road{grid-template-columns:repeat(3,1fr)}}
+.road article{border:2px dashed #A8A29E;border-radius:20px;padding:24px}
+.road p{color:var(--muted);margin-top:8px}
+.tag{display:inline-block;font:700 .75rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:6px 10px;background:var(--primary-soft);color:var(--primary-deep);margin-bottom:14px}
+
+/* final cta */
+.cta{background:var(--primary);color:#fff;text-align:center}
+.cta h2{font-size:clamp(2.2rem,5.6vw,4rem);max-width:18ch;margin-inline:auto}
+.cta p{margin:20px auto 0;max-width:46ch;font-size:1.1875rem;color:#FFEDD5}
+.cta .cta-row{justify-content:center}
+.cta .btn-primary{background:var(--ink);box-shadow:none}
+.cta .btn-primary:hover{background:#000}
+.cta .btn-ghost{border-color:#fff;color:#fff}
+.cta .btn-ghost:hover{background:#fff;color:var(--ink)}
+
+footer{background:var(--ink);color:#D6D3D1;padding-block:40px;font-size:.9375rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;align-items:center}
+footer .logo{color:var(--bg)}
+footer .logo i{color:#FDBA74}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="ico" viewBox="0 0 96 96">
+    <rect width="96" height="96" rx="22" fill="#EA580C"/>
+    <path d="M28 20H68L78 36A7.5 7.5 0 0 1 63 36A7.5 7.5 0 0 1 48 36A7.5 7.5 0 0 1 33 36A7.5 7.5 0 0 1 18 36Z" fill="#FFEDD5"/>
+    <rect x="24" y="49" width="48" height="24" rx="5" fill="#1C1917"/>
+    <rect x="33" y="56" width="10" height="10" rx="2" fill="#fff"/>
+    <rect x="53" y="56" width="10" height="10" rx="2" fill="#EA580C"/>
+  </symbol>
+</svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="mostrador.io, inicio"><svg aria-hidden="true"><use href="#ico"/></svg><span>mostrador<i>.io</i></span></a>
+    <nav aria-label="Principal">
+      <ul>
+        <li><a href="#como-funciona">Cómo funciona</a></li>
+        <li><a href="#pantalla">Pantalla</a></li>
+        <li><a href="#autopedido">Autopedido</a></li>
+        <li><a href="#backoffice">Backoffice</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="mailto:hola@mostrador.io?subject=Quiero%20una%20demo%20de%20Mostrador">Pedí una demo</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="awning-wrap" aria-hidden="true"><div class="awning"></div></div>
+
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow rise">Para cafés, panaderías y locales de comida al paso</p>
+        <h1 class="rise d1">La pantalla que <mark>promociona</mark> y <mark class="o">vende</mark> a la vez.</h1>
+        <p class="lead rise d2">Tu televisor muestra tus promos y siempre tiene un QR a la vista. El cliente lo escanea, arma su pedido desde el celular y te llega por WhatsApp. Sin instalar nada.</p>
+        <div class="cta-row rise d2">
+          <a class="btn btn-primary" href="mailto:hola@mostrador.io?subject=Quiero%20probar%20Mostrador">Probalo gratis</a>
+          <a class="btn btn-ghost" href="mailto:hola@mostrador.io?subject=Quiero%20una%20demo%20de%20Mostrador">Pedí una demo</a>
+        </div>
+        <p class="fine rise d2">Sin pagos online. Sin WhatsApp Business API. Sin app para el cliente.</p>
+      </div>
+
+      <div class="stage rise d1">
+        <div class="tv">
+          <div class="crop" style="--sw:1440;--x:80;--y:120;--w:1280;--h:720">
+            <img src="assets/pantalla.png" width="1440" height="1040" alt="Pantalla del local mostrando la promo 2x1 en hamburguesas clásicas y un código QR con el texto Escaneá y pedí">
+          </div>
+        </div>
+        <div class="phone crop" style="--sw:1900;--x:1430;--y:120;--w:390;--h:845">
+          <img src="assets/autopedido.png" width="1900" height="1040" alt="Celular del cliente con el pedido #1042 registrado y botones para enviarlo por WhatsApp">
+        </div>
+        <div class="chip"><b aria-hidden="true">✓</b>Pedido #1042 → WhatsApp</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="como-funciona">
+    <div class="wrap">
+      <p class="eyebrow">Cómo funciona</p>
+      <h2>De tu catálogo al WhatsApp del local, en tres pasos.</h2>
+      <div class="steps">
+        <article class="step">
+          <div class="crop shot" style="--sw:3250;--x:530;--y:120;--w:390;--h:390">
+            <img src="assets/backoffice.png" width="3250" height="1040" alt="Catálogo del backoffice con categorías y productos con precio y disponibilidad" loading="lazy">
+          </div>
+          <h3>Cargás tu catálogo</h3>
+          <p>Categorías, productos con foto, precio y disponibilidad. Lo hacés desde el celular o la compu.</p>
+        </article>
+        <article class="step">
+          <div class="crop shot" style="--sw:1440;--x:1038;--y:484;--w:308;--h:308">
+            <img src="assets/pantalla.png" width="1440" height="1040" alt="Código QR con el texto Escaneá y pedí y la dirección local1.mostrador.io/centro" loading="lazy">
+          </div>
+          <h3>Tu pantalla muestra el QR</h3>
+          <p>El televisor rota tus imágenes y videos, y el QR nunca desaparece. El cliente escanea y pide.</p>
+        </article>
+        <article class="step">
+          <div class="crop shot" style="--sw:1900;--x:1430;--y:215;--w:390;--h:390">
+            <img src="assets/autopedido.png" width="1900" height="1040" alt="Confirmación de pedido registrado número 1042 con el total" loading="lazy">
+          </div>
+          <h3>El pedido llega por WhatsApp</h3>
+          <p>Un mensaje ya armado con productos, cantidades y total. Un toque y está en tu chat.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="pantalla" class="dark">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">La pantalla</p>
+        <h2>Un televisor que trabaja de vendedor.</h2>
+        <p class="lead">Abrís un enlace en el navegador del televisor y listo. Se acabó pegar carteles y explicar el menú a cada cliente.</p>
+        <ul class="ticks">
+          <li>Rota imágenes y videos en el orden que definís, con la duración de cada uno.</li>
+          <li>El QR de pedido está siempre visible, en cada slide.</li>
+          <li>Consulta cambios cada 30 segundos y sigue reproduciendo sin conexión.</li>
+          <li>Se abre con un enlace propio: no pide usuario ni contraseña.</li>
+        </ul>
+        <p class="token">local1.mostrador.io/screen/7f3k-92ab</p>
+      </div>
+      <div class="glow">
+        <div class="tv">
+          <div class="crop" style="--sw:1440;--x:80;--y:120;--w:1280;--h:720">
+            <img src="assets/pantalla.png" width="1440" height="1040" alt="Reproductor de pantalla completa con la promo 2x1 y el QR de pedido" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="autopedido">
+    <div class="wrap">
+      <p class="eyebrow">El autopedido</p>
+      <h2>El cliente pide solo, desde su celular.</h2>
+      <p class="lead">Escanea el QR y se abre tu catálogo en el navegador. Sin app, sin cuenta, sin esperar en la fila.</p>
+      <ul class="strip" tabindex="0" aria-label="Pasos del autopedido en el celular del cliente">
+        <li>
+          <div class="phone crop" style="--sw:1900;--x:80;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Catálogo con categorías, fotos, descripciones y precios" loading="lazy"></div>
+          <p class="cap"><b>Elegí</b>Catálogo con fotos y precios.</p>
+        </li>
+        <li>
+          <div class="phone crop" style="--sw:1900;--x:530;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Carrito con cantidades editables y total" loading="lazy"></div>
+          <p class="cap"><b>Armá el carrito</b>De 1 a 50 unidades por producto.</p>
+        </li>
+        <li>
+          <div class="phone crop" style="--sw:1900;--x:980;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Pantalla para confirmar el pedido con nombre y nota para el local" loading="lazy"></div>
+          <p class="cap"><b>Confirmá</b>Nombre y una nota para el local.</p>
+        </li>
+        <li>
+          <div class="phone crop" style="--sw:1900;--x:1430;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Pedido registrado con botones verdes para enviar las partes del mensaje por WhatsApp" loading="lazy"></div>
+          <p class="cap"><b>Enviá por WhatsApp</b>Si el mensaje es largo, se divide en partes.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="backoffice" class="plain">
+    <div class="wrap">
+      <div class="bo-head">
+        <div>
+          <p class="eyebrow">El backoffice</p>
+          <h2>Todo el local, en un solo lugar.</h2>
+        </div>
+        <p class="lead">Funciona en Android y en la web. Ves los pedidos, editás el catálogo y cambiás lo que muestra la pantalla sin llamar a nadie.</p>
+      </div>
+      <ul class="strip b5" tabindex="0" aria-label="Pantallas del backoffice">
+        <li>
+          <div class="phone crop" style="--sw:3250;--x:530;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Catálogo con categorías y productos disponibles" loading="lazy"></div>
+          <p class="cap"><b>Catálogo</b>Categorías y productos con imagen.</p>
+        </li>
+        <li>
+          <div class="phone crop" style="--sw:3250;--x:1430;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Contenido de la pantalla con imágenes y videos ordenados y su duración" loading="lazy"></div>
+          <p class="cap"><b>Contenido</b>Subí imágenes y videos, ordenalos y definí cuánto dura cada uno.</p>
+        </li>
+        <li>
+          <div class="phone crop" style="--sw:3250;--x:1880;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Lista de pantallas con su estado y el enlace para abrirlas en el televisor" loading="lazy"></div>
+          <p class="cap"><b>Pantallas</b>Un enlace por televisor, con su estado.</p>
+        </li>
+        <li>
+          <div class="phone crop" style="--sw:3250;--x:2330;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Lista de pedidos con su estado: generada, en preparación o entregada" loading="lazy"></div>
+          <p class="cap"><b>Órdenes</b>Cada pedido con su estado.</p>
+        </li>
+        <li>
+          <div class="phone crop" style="--sw:3250;--x:2780;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Ajustes del local con nombre, WhatsApp y dirección de autopedido" loading="lazy"></div>
+          <p class="cap"><b>Ajustes</b>Nombre, dirección, WhatsApp y URL del QR.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">Para quién es</p>
+      <h2>Gana el local. Gana el cliente.</h2>
+      <div class="two">
+        <article class="card soft">
+          <h3>Para tu local</h3>
+          <ul class="ticks">
+            <li>Usás el televisor que ya tenés para promocionar y para vender.</li>
+            <li>Cada pedido llega ordenado a tu WhatsApp, con productos, cantidades y total.</li>
+            <li>Cambiás promos y precios cuando quieras, desde el celular.</li>
+            <li>Cada pedido queda registrado con su estado.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Para tu cliente</h3>
+          <ul class="ticks">
+            <li>Escanea el QR y pide. No instala nada ni crea una cuenta.</li>
+            <li>Ve el catálogo con fotos y precios claros.</li>
+            <li>Agrega una nota para el local, por ejemplo “sin cebolla, para llevar”.</li>
+            <li>Recibe el número de su pedido apenas lo confirma.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band plain">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Tu dirección, tu costo</p>
+        <h2>Cada negocio tiene su propio subdominio.</h2>
+        <p class="lead">Tu catálogo vive en una dirección corta que se lee en el QR. Y para empezar no necesitás integraciones caras.</p>
+        <ul class="nos">
+          <li>Sin pagos online: cobrás como siempre.</li>
+          <li>Sin WhatsApp Business API: usás tu WhatsApp de todos los días.</li>
+        </ul>
+      </div>
+      <p class="url" aria-label="Ejemplo de dirección: local1.mostrador.io"><span>local1</span>.mostrador.io</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">Próximamente</p>
+      <h2>Lo que estamos preparando.</h2>
+      <div class="road">
+        <article><span class="tag">En el roadmap</span><h3>Catálogo desde una foto</h3><p>Sacale una foto a tu carta y la IA arma los productos por vos.</p></article>
+        <article><span class="tag">En el roadmap</span><h3>Varios locales por negocio</h3><p>Administrá todas tus sucursales desde la misma cuenta.</p></article>
+        <article><span class="tag">En el roadmap</span><h3>Métricas</h3><p>Mirá qué se pide, cuándo y cuánto, para decidir mejor.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="contacto">
+    <div class="wrap">
+      <h2>Poné a trabajar la pantalla de tu local.</h2>
+      <p>Escribinos y lo armamos con tu catálogo. Te respondemos por mail.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="mailto:hola@mostrador.io?subject=Quiero%20probar%20Mostrador">Probalo gratis</a>
+        <a class="btn btn-ghost" href="mailto:hola@mostrador.io?subject=Quiero%20una%20demo%20de%20Mostrador">Pedí una demo</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="mostrador.io, volver arriba"><svg aria-hidden="true"><use href="#ico"/></svg><span>mostrador<i>.io</i></span></a>
+    <a href="mailto:hola@mostrador.io">hola@mostrador.io</a>
+    <span>© 2026 Mostrador</span>
+  </div>
+</footer>
+</body>
+</html>
