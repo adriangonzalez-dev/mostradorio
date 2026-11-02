@@ -66,6 +66,16 @@ section{padding-block:clamp(64px,9vw,120px)}
 /* image crops: --sw source width, --x/--y/--w/--h crop box in source px */
 .crop{position:relative;overflow:hidden;aspect-ratio:var(--w)/var(--h)}
 .crop img{position:absolute;max-width:none;height:auto;width:calc(var(--sw)/var(--w)*100%);left:calc(var(--x)/var(--w)*-100%);top:calc(var(--y)/var(--h)*-100%)}
+/* patches over the mockup's "done" screen: the customer sees one WhatsApp button, not the message parts */
+.crop{container-type:inline-size}
+.fix{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;left:calc((var(--fx) - var(--x))/var(--w)*100%);top:calc((var(--fy) - var(--y))/var(--h)*100%);width:calc(var(--fw)/var(--w)*100%);height:calc(var(--fh)/var(--h)*100%)}
+.fix-note{--fx:1440;--fy:448;--fw:370;--fh:46;background:#FAF7F2;color:var(--muted);font-size:calc(11/var(--w)*100cqw);line-height:1.4}
+.fix-txt{flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;white-space:nowrap;gap:calc(4/var(--w)*100cqw);font-size:calc(var(--t,11)/var(--w)*100cqw);line-height:1.25}
+.fix-txt b{font-size:calc(var(--b,14)/var(--w)*100cqw)}
+.pimg{--fw:var(--fs);--fh:var(--fs);background:var(--primary-soft);border-radius:calc(var(--fs)*.2/var(--w)*100cqw)}
+.pimg svg{width:84%;height:84%}
+.fix-bar{--fx:1431;--fy:818;--fw:388;--fh:146;background:#fff}
+.fix-bar span{display:flex;align-items:center;justify-content:center;width:90%;height:36%;border-radius:calc(11/var(--w)*100cqw);background:var(--whatsapp);color:#fff;font-weight:700;font-size:calc(15/var(--w)*100cqw)}
 .phone{border-radius:6.5%/3%;border:1px solid var(--border);box-shadow:0 24px 40px -20px rgba(28,25,23,.35);background:var(--surface)}
 .shot{border-radius:20px;border:1px solid var(--border);box-shadow:0 20px 40px -24px rgba(28,25,23,.35)}
 
@@ -139,13 +149,6 @@ section{padding-block:clamp(64px,9vw,120px)}
 .nos li{display:flex;gap:12px;align-items:flex-start;font-weight:500}
 .nos li::before{content:"\00d7";flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700;line-height:1}
 
-/* roadmap */
-.road{display:grid;gap:16px;margin-top:40px}
-@media(min-width:760px){.road{grid-template-columns:repeat(3,1fr)}}
-.road article{border:2px dashed #A8A29E;border-radius:20px;padding:24px}
-.road p{color:var(--muted);margin-top:8px}
-.tag{display:inline-block;font:700 .75rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:6px 10px;background:var(--primary-soft);color:var(--primary-deep);margin-bottom:14px}
-
 /* final cta */
 .cta{background:var(--primary);color:#fff;text-align:center}
 .cta h2{font-size:clamp(2.2rem,5.6vw,4rem);max-width:18ch;margin-inline:auto}
@@ -168,6 +171,61 @@ footer .logo i{color:#FDBA74}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-burger" viewBox="0 0 48 48">
+    <path d="M9 22c0-8 7-13 15-13s15 5 15 13z" fill="#F0A33F"/>
+    <g fill="#FFF7E6"><ellipse cx="18" cy="15" rx="1.5" ry=".8"/><ellipse cx="25" cy="12.5" rx="1.5" ry=".8"/><ellipse cx="31" cy="16.5" rx="1.5" ry=".8"/><ellipse cx="22" cy="18.5" rx="1.5" ry=".8"/></g>
+    <path d="M7 24c2-2 3 1 5 0s3-2 5 0 3 1 5 0 3-2 5 0 3 1 5 0 3-2 5 0 2 1 4 0v2H7z" fill="#4CAF50"/>
+    <rect x="9" y="25.5" width="30" height="3" rx="1.5" fill="#E04B3A"/>
+    <rect x="8" y="28.5" width="32" height="6" rx="3" fill="#6B3A1E"/>
+    <path d="M9 35.5h30v1.5a4 4 0 0 1-4 4H13a4 4 0 0 1-4-4z" fill="#E8932F"/>
+  </symbol>
+  <symbol id="i-cheddar" viewBox="0 0 48 48">
+    <path d="M9 20c0-7 7-11 15-11s15 4 15 11z" fill="#F0A33F"/>
+    <g fill="#FFF7E6"><ellipse cx="19" cy="14" rx="1.5" ry=".8"/><ellipse cx="27" cy="12" rx="1.5" ry=".8"/><ellipse cx="31" cy="16" rx="1.5" ry=".8"/></g>
+    <rect x="8" y="21" width="32" height="5.5" rx="2.7" fill="#6B3A1E"/>
+    <path d="M8 20.5h32l-4 4.5-3-2.5-4 4.5-3-3.5-3 4-3-4-4 3.5-3-3-3 2z" fill="#FACC15"/>
+    <rect x="8" y="28.5" width="32" height="5.5" rx="2.7" fill="#6B3A1E"/>
+    <path d="M8 28h32l-4 4-3-2-4 4-3-3-3 3.5-3-3.5-4 3-3-2.5-3 1.5z" fill="#FACC15"/>
+    <path d="M9 35h30v1.5a4 4 0 0 1-4 4H13a4 4 0 0 1-4-4z" fill="#E8932F"/>
+  </symbol>
+  <symbol id="i-veggie" viewBox="0 0 48 48">
+    <path d="M9 22c0-8 7-13 15-13s15 5 15 13z" fill="#D9A35B"/>
+    <g fill="#8A6A3A"><ellipse cx="18" cy="15" rx="1.3" ry=".8"/><ellipse cx="25" cy="12.5" rx="1.3" ry=".8"/><ellipse cx="31" cy="16.5" rx="1.3" ry=".8"/></g>
+    <path d="M7 24c2-2 3 1 5 0s3-2 5 0 3 1 5 0 3-2 5 0 3 1 5 0 3-2 5 0 2 1 4 0v2H7z" fill="#4CAF50"/>
+    <rect x="9" y="25.5" width="30" height="3" rx="1.5" fill="#E04B3A"/>
+    <rect x="8" y="28.5" width="32" height="6" rx="3" fill="#7A8F3A"/>
+    <g fill="#A3B95A"><circle cx="15" cy="31.5" r="1"/><circle cx="23" cy="30.5" r="1"/><circle cx="31" cy="32" r="1"/></g>
+    <path d="M9 35.5h30v1.5a4 4 0 0 1-4 4H13a4 4 0 0 1-4-4z" fill="#C98E47"/>
+  </symbol>
+  <symbol id="i-fries" viewBox="0 0 48 48">
+    <g fill="#FACC15" stroke="#E8A814" stroke-width=".6"><rect x="15" y="9" width="3.6" height="17" rx="1" transform="rotate(-10 17 17)"/><rect x="20" y="6" width="3.6" height="19" rx="1" transform="rotate(-3 22 15)"/><rect x="25" y="7" width="3.6" height="18" rx="1" transform="rotate(5 27 16)"/><rect x="29.5" y="10" width="3.6" height="16" rx="1" transform="rotate(12 31 18)"/><rect x="22.5" y="11" width="3.6" height="14" rx="1"/></g>
+    <path d="M12.5 21h23l-3.5 21h-16z" fill="#DC2626"/>
+    <path d="M18 27.5c2 2.5 4 2.5 6 0s4-2.5 6 0" fill="none" stroke="#FFEDD5" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-combo" viewBox="0 0 48 48">
+    <path d="M29 14h12l-2.2 27h-7.6z" fill="#EA580C"/>
+    <rect x="28" y="12" width="14" height="3" rx="1.5" fill="#1C1917"/>
+    <path d="M36 12l2-7h3" fill="none" stroke="#1C1917" stroke-width="1.6" stroke-linecap="round"/>
+    <rect x="31" y="22" width="8" height="5" rx="1" fill="#FFEDD5"/>
+    <use href="#i-burger" x="1" y="11" width="32" height="32"/>
+  </symbol>
+  <symbol id="i-promo" viewBox="0 0 48 48">
+    <use href="#i-burger" x="1" y="12" width="26" height="26"/>
+    <use href="#i-burger" x="21" y="12" width="26" height="26"/>
+    <rect x="13" y="34" width="22" height="10" rx="5" fill="#1C1917"/>
+    <text x="24" y="41.6" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="8" fill="#fff">2×1</text>
+  </symbol>
+  <symbol id="i-video" viewBox="0 0 48 48">
+    <use href="#i-combo" width="48" height="48"/>
+    <circle cx="36" cy="36" r="8" fill="#1C1917"/>
+    <path d="M33.5 32.5l6 3.5-6 3.5z" fill="#fff"/>
+  </symbol>
+  <symbol id="i-clock" viewBox="0 0 48 48">
+    <circle cx="24" cy="24" r="15" fill="#fff" stroke="#1C1917" stroke-width="3"/>
+    <path d="M24 15v9l6 4" fill="none" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <symbol id="ico" viewBox="0 0 96 96">
     <rect width="96" height="96" rx="22" fill="#EA580C"/>
@@ -184,9 +242,9 @@ footer .logo i{color:#FDBA74}
     <nav aria-label="Principal">
       <ul>
         <li><a href="#como-funciona">Cómo funciona</a></li>
-        <li><a href="#pantalla">Pantalla</a></li>
-        <li><a href="#autopedido">Autopedido</a></li>
-        <li><a href="#backoffice">Backoffice</a></li>
+        <li><a href="#pantalla">Tu pantalla</a></li>
+        <li><a href="#autopedido">Pedidos con QR</a></li>
+        <li><a href="#backoffice">Panel del local</a></li>
       </ul>
     </nav>
     <a class="btn btn-primary btn-sm" href="mailto:hola@mostrador.io?subject=Quiero%20una%20demo%20de%20Mostrador">Pedí una demo</a>
@@ -206,17 +264,19 @@ footer .logo i{color:#FDBA74}
           <a class="btn btn-primary" href="mailto:hola@mostrador.io?subject=Quiero%20probar%20Mostrador">Probalo gratis</a>
           <a class="btn btn-ghost" href="mailto:hola@mostrador.io?subject=Quiero%20una%20demo%20de%20Mostrador">Pedí una demo</a>
         </div>
-        <p class="fine rise d2">Sin pagos online. Sin WhatsApp Business API. Sin app para el cliente.</p>
+        <p class="fine rise d2">Pago con Mercado Pago o en efectivo. Usás tu WhatsApp de siempre. Sin app para el cliente.</p>
       </div>
 
       <div class="stage rise d1">
         <div class="tv">
           <div class="crop" style="--sw:1440;--x:80;--y:120;--w:1280;--h:720">
-            <img src="assets/pantalla.png" width="1440" height="1040" alt="Pantalla del local mostrando la promo 2x1 en hamburguesas clásicas y un código QR con el texto Escaneá y pedí">
+            <img src="assets/pantalla.png" width="1440" height="1040" alt="Pantalla del local mostrando la promo 2x1 en hamburguesas clásicas y un código QR con el texto Escaneá y pedí"><span class="fix" style="--fx:1080;--fy:748;--fw:224;--fh:28;background:#fff;color:#78716C;font-size:calc(12.5/var(--w)*100cqw)" aria-hidden="true">tulocal.mostrador.io/centro</span>
           </div>
         </div>
         <div class="phone crop" style="--sw:1900;--x:1430;--y:120;--w:390;--h:845">
-          <img src="assets/autopedido.png" width="1900" height="1040" alt="Celular del cliente con el pedido #1042 registrado y botones para enviarlo por WhatsApp">
+          <img src="assets/autopedido.png" width="1900" height="1040" alt="Celular del cliente con el pedido #1042 registrado y un botón para enviarlo por WhatsApp"><span class="fix fix-txt" style="--fx:100;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:550;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1000;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1450;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span>
+          <span class="fix fix-note" aria-hidden="true">Envialo al WhatsApp del local con un toque.</span>
+          <span class="fix fix-bar" aria-hidden="true"><span>Enviar por WhatsApp</span></span>
         </div>
         <div class="chip"><b aria-hidden="true">✓</b>Pedido #1042 → WhatsApp</div>
       </div>
@@ -230,24 +290,26 @@ footer .logo i{color:#FDBA74}
       <div class="steps">
         <article class="step">
           <div class="crop shot" style="--sw:3250;--x:530;--y:120;--w:390;--h:390">
-            <img src="assets/backoffice.png" width="3250" height="1040" alt="Catálogo del backoffice con categorías y productos con precio y disponibilidad" loading="lazy">
+            <img src="assets/backoffice.png" width="3250" height="1040" alt="Catálogo del panel con categorías y productos con precio y disponibilidad" loading="lazy"><span class="fix fix-txt" style="--fx:1912;--fy:386;--fw:332;--fh:80;--t:11.5;--b:15.5;background:#1C1917;color:#A8A29E" aria-hidden="true"><span>Abrí este link en el televisor</span><b style="color:#fff">tulocal.mostrador.io/tv-mostrador</b><span>Sin usuario ni contraseña.</span></span><span class="fix fix-txt" style="--fx:2812;--fy:412;--fw:330;--fh:58;--t:11.5;--b:15;background:#FFEDD5;color:#78716C" aria-hidden="true"><span>Link para pedir (va en tu QR)</span><b style="color:#EA580C">tulocal.mostrador.io/centro</b></span>
+            <span class="fix pimg" style="--fx:563;--fy:265;--fs:48" aria-hidden="true"><svg><use href="#i-burger"/></svg></span><span class="fix pimg" style="--fx:563;--fy:351;--fs:48" aria-hidden="true"><svg><use href="#i-cheddar"/></svg></span><span class="fix pimg" style="--fx:563;--fy:437;--fs:48" aria-hidden="true"><svg><use href="#i-veggie"/></svg></span><span class="fix pimg" style="--fx:563;--fy:523;--fs:48" aria-hidden="true"><svg><use href="#i-fries"/></svg></span><span class="fix pimg" style="--fx:563;--fy:609;--fs:48" aria-hidden="true"><svg><use href="#i-combo"/></svg></span>
           </div>
           <h3>Cargás tu catálogo</h3>
           <p>Categorías, productos con foto, precio y disponibilidad. Lo hacés desde el celular o la compu.</p>
         </article>
         <article class="step">
           <div class="crop shot" style="--sw:1440;--x:1038;--y:484;--w:308;--h:308">
-            <img src="assets/pantalla.png" width="1440" height="1040" alt="Código QR con el texto Escaneá y pedí y la dirección local1.mostrador.io/centro" loading="lazy">
+            <img src="assets/pantalla.png" width="1440" height="1040" alt="Código QR con el texto Escaneá y pedí y la dirección tulocal.mostrador.io/centro" loading="lazy"><span class="fix" style="--fx:1080;--fy:748;--fw:224;--fh:28;background:#fff;color:#78716C;font-size:calc(12.5/var(--w)*100cqw)" aria-hidden="true">tulocal.mostrador.io/centro</span>
           </div>
           <h3>Tu pantalla muestra el QR</h3>
           <p>El televisor rota tus imágenes y videos, y el QR nunca desaparece. El cliente escanea y pide.</p>
         </article>
         <article class="step">
           <div class="crop shot" style="--sw:1900;--x:1430;--y:215;--w:390;--h:390">
-            <img src="assets/autopedido.png" width="1900" height="1040" alt="Confirmación de pedido registrado número 1042 con el total" loading="lazy">
+            <img src="assets/autopedido.png" width="1900" height="1040" alt="Confirmación de pedido registrado número 1042 con el total" loading="lazy"><span class="fix fix-txt" style="--fx:100;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:550;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1000;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1450;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span>
+            <span class="fix fix-note" aria-hidden="true">Envialo al WhatsApp del local con un toque.</span>
           </div>
           <h3>El pedido llega por WhatsApp</h3>
-          <p>Un mensaje ya armado con productos, cantidades y total. Un toque y está en tu chat.</p>
+          <p>Un mensaje ya armado con productos, cantidades y total. Con Mercado Pago se cobra y se confirma al instante; en efectivo, se confirma cuando te pagan en el mostrador.</p>
         </article>
       </div>
     </div>
@@ -256,21 +318,21 @@ footer .logo i{color:#FDBA74}
   <section id="pantalla" class="dark">
     <div class="wrap split">
       <div>
-        <p class="eyebrow">La pantalla</p>
+        <p class="eyebrow">Tu pantalla</p>
         <h2>Un televisor que trabaja de vendedor.</h2>
-        <p class="lead">Abrís un enlace en el navegador del televisor y listo. Se acabó pegar carteles y explicar el menú a cada cliente.</p>
+        <p class="lead">Abrís un link en el televisor y listo. Se acabó pegar carteles y explicar el menú a cada cliente.</p>
         <ul class="ticks">
           <li>Rota imágenes y videos en el orden que definís, con la duración de cada uno.</li>
-          <li>El QR de pedido está siempre visible, en cada slide.</li>
-          <li>Consulta cambios cada 30 segundos y sigue reproduciendo sin conexión.</li>
-          <li>Se abre con un enlace propio: no pide usuario ni contraseña.</li>
+          <li>El QR para pedir está siempre a la vista.</li>
+          <li>Lo que cambiás aparece solo, y si se corta internet sigue mostrando tu contenido.</li>
+          <li>Cada televisor tiene su propio link: lo abrís y listo, sin usuario ni contraseña.</li>
         </ul>
-        <p class="token">local1.mostrador.io/screen/7f3k-92ab</p>
+        <p class="token">tulocal.mostrador.io/pantalla</p>
       </div>
       <div class="glow">
         <div class="tv">
           <div class="crop" style="--sw:1440;--x:80;--y:120;--w:1280;--h:720">
-            <img src="assets/pantalla.png" width="1440" height="1040" alt="Reproductor de pantalla completa con la promo 2x1 y el QR de pedido" loading="lazy">
+            <img src="assets/pantalla.png" width="1440" height="1040" alt="Televisor del local con la promo 2x1 y el QR de pedido" loading="lazy"><span class="fix" style="--fx:1080;--fy:748;--fw:224;--fh:28;background:#fff;color:#78716C;font-size:calc(12.5/var(--w)*100cqw)" aria-hidden="true">tulocal.mostrador.io/centro</span>
           </div>
         </div>
       </div>
@@ -279,25 +341,25 @@ footer .logo i{color:#FDBA74}
 
   <section id="autopedido">
     <div class="wrap">
-      <p class="eyebrow">El autopedido</p>
+      <p class="eyebrow">Pedidos con QR</p>
       <h2>El cliente pide solo, desde su celular.</h2>
-      <p class="lead">Escanea el QR y se abre tu catálogo en el navegador. Sin app, sin cuenta, sin esperar en la fila.</p>
-      <ul class="strip" tabindex="0" aria-label="Pasos del autopedido en el celular del cliente">
+      <p class="lead">Escanea el QR y se abre tu catálogo al instante. Sin app, sin cuenta, sin esperar en la fila.</p>
+      <ul class="strip" tabindex="0" aria-label="Pasos del pedido en el celular del cliente">
         <li>
-          <div class="phone crop" style="--sw:1900;--x:80;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Catálogo con categorías, fotos, descripciones y precios" loading="lazy"></div>
+          <div class="phone crop" style="--sw:1900;--x:80;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Catálogo con categorías, fotos, descripciones y precios" loading="lazy"><span class="fix fix-txt" style="--fx:100;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:550;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1000;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1450;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix pimg" style="--fx:113;--fy:273;--fs:88" aria-hidden="true"><svg><use href="#i-burger"/></svg></span><span class="fix pimg" style="--fx:113;--fy:399;--fs:88" aria-hidden="true"><svg><use href="#i-cheddar"/></svg></span><span class="fix pimg" style="--fx:113;--fy:525;--fs:88" aria-hidden="true"><svg><use href="#i-veggie"/></svg></span><span class="fix pimg" style="--fx:113;--fy:651;--fs:88" aria-hidden="true"><svg><use href="#i-fries"/></svg></span></div>
           <p class="cap"><b>Elegí</b>Catálogo con fotos y precios.</p>
         </li>
         <li>
-          <div class="phone crop" style="--sw:1900;--x:530;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Carrito con cantidades editables y total" loading="lazy"></div>
-          <p class="cap"><b>Armá el carrito</b>De 1 a 50 unidades por producto.</p>
+          <div class="phone crop" style="--sw:1900;--x:530;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Carrito con cantidades editables y total" loading="lazy"><span class="fix fix-txt" style="--fx:100;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:550;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1000;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1450;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span></div>
+          <p class="cap"><b>Armá el carrito</b>Elegí cuántos querés de cada uno.</p>
         </li>
         <li>
-          <div class="phone crop" style="--sw:1900;--x:980;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Pantalla para confirmar el pedido con nombre y nota para el local" loading="lazy"></div>
-          <p class="cap"><b>Confirmá</b>Nombre y una nota para el local.</p>
+          <div class="phone crop" style="--sw:1900;--x:980;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Pantalla para confirmar el pedido con nombre y nota para el local" loading="lazy"><span class="fix fix-txt" style="--fx:100;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:550;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1000;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1450;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span></div>
+          <p class="cap"><b>Confirmá</b>Nombre, nota y cómo pagás: Mercado Pago o efectivo.</p>
         </li>
         <li>
-          <div class="phone crop" style="--sw:1900;--x:1430;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Pedido registrado con botones verdes para enviar las partes del mensaje por WhatsApp" loading="lazy"></div>
-          <p class="cap"><b>Enviá por WhatsApp</b>Si el mensaje es largo, se divide en partes.</p>
+          <div class="phone crop" style="--sw:1900;--x:1430;--y:120;--w:390;--h:845"><img src="assets/autopedido.png" width="1900" height="1040" alt="Pedido registrado con un botón verde para enviarlo por WhatsApp" loading="lazy"><span class="fix fix-txt" style="--fx:100;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:550;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1000;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-txt" style="--fx:1450;--fy:164;--fw:205;--fh:16;background:#fff;color:#78716C" aria-hidden="true">Local Centro · tulocal.mostrador.io</span><span class="fix fix-note" aria-hidden="true">Envialo al WhatsApp del local con un toque.</span><span class="fix fix-bar" aria-hidden="true"><span>Enviar por WhatsApp</span></span></div>
+          <p class="cap"><b>Enviá por WhatsApp</b>El mensaje sale armado, con un solo toque.</p>
         </li>
       </ul>
     </div>
@@ -307,31 +369,31 @@ footer .logo i{color:#FDBA74}
     <div class="wrap">
       <div class="bo-head">
         <div>
-          <p class="eyebrow">El backoffice</p>
+          <p class="eyebrow">Panel del local</p>
           <h2>Todo el local, en un solo lugar.</h2>
         </div>
-        <p class="lead">Funciona en Android y en la web. Ves los pedidos, editás el catálogo y cambiás lo que muestra la pantalla sin llamar a nadie.</p>
+        <p class="lead">Lo usás desde el celular o la compu. Ves los pedidos, editás el catálogo y cambiás lo que muestra la pantalla sin llamar a nadie.</p>
       </div>
-      <ul class="strip b5" tabindex="0" aria-label="Pantallas del backoffice">
+      <ul class="strip b5" tabindex="0" aria-label="Pantallas del panel del local">
         <li>
-          <div class="phone crop" style="--sw:3250;--x:530;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Catálogo con categorías y productos disponibles" loading="lazy"></div>
+          <div class="phone crop" style="--sw:3250;--x:530;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Catálogo con categorías y productos disponibles" loading="lazy"><span class="fix fix-txt" style="--fx:1912;--fy:386;--fw:332;--fh:80;--t:11.5;--b:15.5;background:#1C1917;color:#A8A29E" aria-hidden="true"><span>Abrí este link en el televisor</span><b style="color:#fff">tulocal.mostrador.io/tv-mostrador</b><span>Sin usuario ni contraseña.</span></span><span class="fix fix-txt" style="--fx:2812;--fy:412;--fw:330;--fh:58;--t:11.5;--b:15;background:#FFEDD5;color:#78716C" aria-hidden="true"><span>Link para pedir (va en tu QR)</span><b style="color:#EA580C">tulocal.mostrador.io/centro</b></span><span class="fix pimg" style="--fx:563;--fy:265;--fs:48" aria-hidden="true"><svg><use href="#i-burger"/></svg></span><span class="fix pimg" style="--fx:563;--fy:351;--fs:48" aria-hidden="true"><svg><use href="#i-cheddar"/></svg></span><span class="fix pimg" style="--fx:563;--fy:437;--fs:48" aria-hidden="true"><svg><use href="#i-veggie"/></svg></span><span class="fix pimg" style="--fx:563;--fy:523;--fs:48" aria-hidden="true"><svg><use href="#i-fries"/></svg></span><span class="fix pimg" style="--fx:563;--fy:609;--fs:48" aria-hidden="true"><svg><use href="#i-combo"/></svg></span></div>
           <p class="cap"><b>Catálogo</b>Categorías y productos con imagen.</p>
         </li>
         <li>
-          <div class="phone crop" style="--sw:3250;--x:1430;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Contenido de la pantalla con imágenes y videos ordenados y su duración" loading="lazy"></div>
+          <div class="phone crop" style="--sw:3250;--x:1430;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Contenido de la pantalla con imágenes y videos ordenados y su duración" loading="lazy"><span class="fix fix-txt" style="--fx:1912;--fy:386;--fw:332;--fh:80;--t:11.5;--b:15.5;background:#1C1917;color:#A8A29E" aria-hidden="true"><span>Abrí este link en el televisor</span><b style="color:#fff">tulocal.mostrador.io/tv-mostrador</b><span>Sin usuario ni contraseña.</span></span><span class="fix fix-txt" style="--fx:2812;--fy:412;--fw:330;--fh:58;--t:11.5;--b:15;background:#FFEDD5;color:#78716C" aria-hidden="true"><span>Link para pedir (va en tu QR)</span><b style="color:#EA580C">tulocal.mostrador.io/centro</b></span><span class="fix pimg" style="--fx:1463;--fy:246;--fs:48" aria-hidden="true"><svg><use href="#i-promo"/></svg></span><span class="fix pimg" style="--fx:1463;--fy:332;--fs:48" aria-hidden="true"><svg><use href="#i-video"/></svg></span><span class="fix pimg" style="--fx:1463;--fy:418;--fs:48" aria-hidden="true"><svg><use href="#i-cheddar"/></svg></span><span class="fix pimg" style="--fx:1463;--fy:504;--fs:48" aria-hidden="true"><svg><use href="#i-clock"/></svg></span></div>
           <p class="cap"><b>Contenido</b>Subí imágenes y videos, ordenalos y definí cuánto dura cada uno.</p>
         </li>
         <li>
-          <div class="phone crop" style="--sw:3250;--x:1880;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Lista de pantallas con su estado y el enlace para abrirlas en el televisor" loading="lazy"></div>
-          <p class="cap"><b>Pantallas</b>Un enlace por televisor, con su estado.</p>
+          <div class="phone crop" style="--sw:3250;--x:1880;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Lista de pantallas con su estado y el enlace para abrirlas en el televisor" loading="lazy"><span class="fix fix-txt" style="--fx:1912;--fy:386;--fw:332;--fh:80;--t:11.5;--b:15.5;background:#1C1917;color:#A8A29E" aria-hidden="true"><span>Abrí este link en el televisor</span><b style="color:#fff">tulocal.mostrador.io/tv-mostrador</b><span>Sin usuario ni contraseña.</span></span><span class="fix fix-txt" style="--fx:2812;--fy:412;--fw:330;--fh:58;--t:11.5;--b:15;background:#FFEDD5;color:#78716C" aria-hidden="true"><span>Link para pedir (va en tu QR)</span><b style="color:#EA580C">tulocal.mostrador.io/centro</b></span></div>
+          <p class="cap"><b>Pantallas</b>Un link por televisor y ves si está encendido.</p>
         </li>
         <li>
-          <div class="phone crop" style="--sw:3250;--x:2330;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Lista de pedidos con su estado: generada, en preparación o entregada" loading="lazy"></div>
-          <p class="cap"><b>Órdenes</b>Cada pedido con su estado.</p>
+          <div class="phone crop" style="--sw:3250;--x:2330;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Lista de pedidos con su estado: generada, en preparación o entregada" loading="lazy"><span class="fix fix-txt" style="--fx:1912;--fy:386;--fw:332;--fh:80;--t:11.5;--b:15.5;background:#1C1917;color:#A8A29E" aria-hidden="true"><span>Abrí este link en el televisor</span><b style="color:#fff">tulocal.mostrador.io/tv-mostrador</b><span>Sin usuario ni contraseña.</span></span><span class="fix fix-txt" style="--fx:2812;--fy:412;--fw:330;--fh:58;--t:11.5;--b:15;background:#FFEDD5;color:#78716C" aria-hidden="true"><span>Link para pedir (va en tu QR)</span><b style="color:#EA580C">tulocal.mostrador.io/centro</b></span></div>
+          <p class="cap"><b>Órdenes</b>Cada pedido: nuevo, en preparación o entregado.</p>
         </li>
         <li>
-          <div class="phone crop" style="--sw:3250;--x:2780;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Ajustes del local con nombre, WhatsApp y dirección de autopedido" loading="lazy"></div>
-          <p class="cap"><b>Ajustes</b>Nombre, dirección, WhatsApp y URL del QR.</p>
+          <div class="phone crop" style="--sw:3250;--x:2780;--y:120;--w:390;--h:845"><img src="assets/backoffice.png" width="3250" height="1040" alt="Ajustes del local con nombre, WhatsApp y link para pedir" loading="lazy"><span class="fix fix-txt" style="--fx:1912;--fy:386;--fw:332;--fh:80;--t:11.5;--b:15.5;background:#1C1917;color:#A8A29E" aria-hidden="true"><span>Abrí este link en el televisor</span><b style="color:#fff">tulocal.mostrador.io/tv-mostrador</b><span>Sin usuario ni contraseña.</span></span><span class="fix fix-txt" style="--fx:2812;--fy:412;--fw:330;--fh:58;--t:11.5;--b:15;background:#FFEDD5;color:#78716C" aria-hidden="true"><span>Link para pedir (va en tu QR)</span><b style="color:#EA580C">tulocal.mostrador.io/centro</b></span></div>
+          <p class="cap"><b>Ajustes</b>Nombre, dirección, WhatsApp y el link de tu QR.</p>
         </li>
       </ul>
     </div>
@@ -348,7 +410,8 @@ footer .logo i{color:#FDBA74}
             <li>Usás el televisor que ya tenés para promocionar y para vender.</li>
             <li>Cada pedido llega ordenado a tu WhatsApp, con productos, cantidades y total.</li>
             <li>Cambiás promos y precios cuando quieras, desde el celular.</li>
-            <li>Cada pedido queda registrado con su estado.</li>
+            <li>Con Mercado Pago, el pedido se cobra y se confirma solo. En efectivo, lo confirmás cuando te pagan en el mostrador.</li>
+            <li>Ves cada pedido y en qué punto está.</li>
           </ul>
         </article>
         <article class="card">
@@ -357,6 +420,7 @@ footer .logo i{color:#FDBA74}
             <li>Escanea el QR y pide. No instala nada ni crea una cuenta.</li>
             <li>Ve el catálogo con fotos y precios claros.</li>
             <li>Agrega una nota para el local, por ejemplo “sin cebolla, para llevar”.</li>
+            <li>Paga con Mercado Pago desde el celular o en efectivo al retirar.</li>
             <li>Recibe el número de su pedido apenas lo confirma.</li>
           </ul>
         </article>
@@ -367,27 +431,14 @@ footer .logo i{color:#FDBA74}
   <section class="band plain">
     <div class="wrap">
       <div>
-        <p class="eyebrow">Tu dirección, tu costo</p>
-        <h2>Cada negocio tiene su propio subdominio.</h2>
-        <p class="lead">Tu catálogo vive en una dirección corta que se lee en el QR. Y para empezar no necesitás integraciones caras.</p>
+        <p class="eyebrow">Tu propia dirección</p>
+        <h2>Cada negocio tiene su propia dirección web.</h2>
+        <p class="lead">Tu catálogo vive en una dirección corta, la misma de tu QR. Y para empezar no necesitás contratar nada caro.</p>
         <ul class="nos">
-          <li>Sin pagos online: cobrás como siempre.</li>
-          <li>Sin WhatsApp Business API: usás tu WhatsApp de todos los días.</li>
+          <li>Sin planes especiales de WhatsApp: usás el de todos los días.</li>
         </ul>
       </div>
-      <p class="url" aria-label="Ejemplo de dirección: local1.mostrador.io"><span>local1</span>.mostrador.io</p>
-    </div>
-  </section>
-
-  <section>
-    <div class="wrap">
-      <p class="eyebrow">Próximamente</p>
-      <h2>Lo que estamos preparando.</h2>
-      <div class="road">
-        <article><span class="tag">En el roadmap</span><h3>Catálogo desde una foto</h3><p>Sacale una foto a tu carta y la IA arma los productos por vos.</p></article>
-        <article><span class="tag">En el roadmap</span><h3>Varios locales por negocio</h3><p>Administrá todas tus sucursales desde la misma cuenta.</p></article>
-        <article><span class="tag">En el roadmap</span><h3>Métricas</h3><p>Mirá qué se pide, cuándo y cuánto, para decidir mejor.</p></article>
-      </div>
+      <p class="url" aria-label="Ejemplo de dirección: tulocal.mostrador.io"><span>tulocal</span>.mostrador.io</p>
     </div>
   </section>
 
